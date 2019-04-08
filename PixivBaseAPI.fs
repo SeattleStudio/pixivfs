@@ -10,10 +10,13 @@ type PixivBaseAPI() =
     member val internal client_id = "MOBrBDS8blbauoSck0ZfDbtuzpyT" with get, set
     member val internal client_secret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj" with get, set
     member val internal access_token : string = null with get, set
-    member val internal refresh_token : string = null with get, set
+    member val internal _refresh_token : string = null with get, set
+
+    member __.refresh_token
+        with get () = __._refresh_token
+        and internal set (value) = __._refresh_token <- value
+
     member val internal user_id = 0 with get, set
-    //获取refresh_token便于保存
-    member __.refresh_token_rdonly = __.refresh_token
 
     member __.require_auth =
         if __.access_token = null then
