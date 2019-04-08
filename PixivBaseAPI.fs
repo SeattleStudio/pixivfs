@@ -60,14 +60,17 @@ type PixivBaseAPI() =
             [ "get_secure_url", "1"
               "client_id", __.client_id
               "client_secret", __.client_secret ]
-        if (not (isNull username)) && (not (isNull password)) then
+        if (not (String.IsNullOrEmpty username))
+           && (not (String.IsNullOrEmpty password)) then
             data <- data @ [ "grant_type", "password"
                              "username", username
                              "password", password ]
-        else if (not (isNull refresh_token)) || (not (isNull __.refresh_token)) then
+        else if (not (String.IsNullOrEmpty refresh_token))
+                || (not (String.IsNullOrEmpty __.refresh_token)) then
             data <- data @ [ "grant_type", "refresh_token"
                              "refresh_token",
-                             (if isNull refresh_token then __.refresh_token
+                             (if String.IsNullOrEmpty refresh_token then
+                                  __.refresh_token
                               else refresh_token) ]
         else
             "[ERROR] auth() but no password or refresh_token is set."
