@@ -69,8 +69,8 @@ type PixivBaseAPI() =
             |> PixivException
             |> raise
         let r =
-            Http.Request
-                (url, headers = headers, httpMethod = "POST",
+            __.requests_call
+                (url = url, headers = headers, method = "POST",
                  body = FormValues data)
         if not (List.contains r.StatusCode [ 200; 301; 302 ]) then
             if List.contains ("grant_type", "password") data then
