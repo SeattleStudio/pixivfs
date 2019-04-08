@@ -18,7 +18,7 @@ type PixivBaseAPI() =
 
     member val internal user_id = 0 with get, set
 
-    member __.require_auth =
+    member __.require_auth() =
         if __.access_token = null then
             "Authentication required! Call login() or set_auth() first!"
             |> PixivException
