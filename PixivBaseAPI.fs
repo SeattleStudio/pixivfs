@@ -6,7 +6,7 @@ open System
 
 exception public PixivException of string
 
-type APIUtils() =
+type PixivBaseAPI() =
     member val private client_id = "MOBrBDS8blbauoSck0ZfDbtuzpyT" with get, set
     member val private client_secret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj" with get, set
     member val private access_token : string = null with get, set
