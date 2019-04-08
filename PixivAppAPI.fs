@@ -1,9 +1,11 @@
 namespace PixivFS
 
 open System
+open FSharp.Data
 
 type PixivAppAPI() =
     inherit PixivBaseAPI()
+
     member __.no_auth_requests_call (method, url, ?headers, ?query, ?body,
                                      ?req_auth) =
         let req_auth = defaultArg req_auth true
@@ -23,5 +25,18 @@ type PixivAppAPI() =
             base.require_auth
             headers <- headers
                        @ [ "Authorization",
-                           String.Format("Bearer {0}", base.access_token) ]
+                           String.Format("Bearer {0}", __.access_token) ]
         __.requests_call (method, url, headers, ?query = query, ?body = body)
+
+    member __.user_detail (user_id, ?filter, ?req_auth) =
+        let filter = defaultArg filter "for_ios"
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/user/detail"
+
+        let query =
+            [ "user_id", user_id
+              "filter", filter ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
