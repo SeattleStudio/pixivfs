@@ -19,6 +19,17 @@ type PixivBaseAPI() =
             |> PixivException
             |> raise
 
+    member __.requests_call (method, url, ?headers, ?query, ?body) =
+        try
+            Http.Request
+                (url = url, httpMethod = method, ?headers = headers,
+                 ?query = query, ?body = body)
+        with e ->
+            ("Request error: {0}", e.Message)
+            |> String.Format
+            |> PixivException
+            |> raise
+
     member __.set_auth (access_token, ?refresh_token) =
         let refresh_token = defaultArg refresh_token null
         __.access_token <- access_token
