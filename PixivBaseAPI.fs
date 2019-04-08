@@ -7,11 +7,11 @@ open System
 exception public PixivException of string
 
 type PixivBaseAPI() =
-    member val private client_id = "MOBrBDS8blbauoSck0ZfDbtuzpyT" with get, set
-    member val private client_secret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj" with get, set
-    member val private access_token : string = null with get, set
-    member val private refresh_token : string = null with get, set
-    member val private user_id = 0 with get, set
+    member val internal client_id = "MOBrBDS8blbauoSck0ZfDbtuzpyT" with get, set
+    member val internal client_secret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj" with get, set
+    member val internal access_token : string = null with get, set
+    member val internal refresh_token : string = null with get, set
+    member val internal user_id = 0 with get, set
 
     member __.require_auth =
         if __.access_token = null then
