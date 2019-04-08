@@ -13,7 +13,7 @@ type APIUtils() =
     member val private refresh_token : string = null with get, set
     member val private user_id = 0 with get, set
 
-    member __.require_auth : unit =
+    member __.require_auth =
         if __.access_token = null then
             "Authentication required! Call login() or set_auth() first!"
             |> PixivException
@@ -72,12 +72,16 @@ type APIUtils() =
                 |> raise
         let mutable token = JsonValue.Null
         try
-            token <- r.Body.ToString() |> JsonValue.Parse
-            __.access_token <- token?access_token.AsString()
-            __.user_id <- token?user?id.AsInteger()
-            __.refresh_token <- token?refresh_token.AsString()
+            let mutable resjson = r.Body.ToString()
+            resjson <- resjson.Substring(0, resjson.LastIndexOf("\""))
+            resjson <- resjson.Substring(resjson.IndexOf("\"") + 1)
+            token <- resjson |> JsonValue.Parse
+            __.access_token <- token?response?access_token.AsString()
+            __.user_id <- token?response?user?id.AsInteger()
+            __.refresh_token <- token?response?refresh_token.AsString()
         with e ->
-            "Get access_token error! Response:\n{0}"
+            ("Get access_token error! Exception:\n{0}\nResponse:\n{1}",
+             e.Message, r.Body.ToString())
             |> String.Format
             |> PixivException
             |> raise
