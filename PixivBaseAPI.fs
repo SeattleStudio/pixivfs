@@ -12,6 +12,8 @@ type PixivBaseAPI() =
     member val internal access_token : string = null with get, set
     member val internal refresh_token : string = null with get, set
     member val internal user_id = 0 with get, set
+    //获取refresh_token便于保存
+    member __.refresh_token_rdonly = __.refresh_token
 
     member __.require_auth =
         if __.access_token = null then

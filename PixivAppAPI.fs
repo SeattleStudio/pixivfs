@@ -6,6 +6,7 @@ open FSharp.Data
 type PixivAppAPI() =
     inherit PixivBaseAPI()
 
+    //可通过req_auth来决定是否使用登录后的数据
     member __.no_auth_requests_call (method, url, ?headers, ?query, ?body,
                                      ?req_auth) =
         let req_auth = defaultArg req_auth true
@@ -28,6 +29,7 @@ type PixivAppAPI() =
                            String.Format("Bearer {0}", __.access_token) ]
         __.requests_call (method, url, headers, ?query = query, ?body = body)
 
+    //用户详情
     member __.user_detail (user_id, ?filter, ?req_auth) =
         let filter = defaultArg filter "for_ios"
         let req_auth = defaultArg req_auth true
@@ -41,6 +43,7 @@ type PixivAppAPI() =
         |> __.get_json
         |> JsonValue.Parse
 
+    //用户作品集
     member __.user_illusts (user_id, ?illust_type, ?filter, ?offset, ?req_auth) =
         let illust_type = defaultArg illust_type "illust"
         let filter = defaultArg filter "for_ios"
