@@ -40,3 +40,22 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    member __.user_illusts (user_id, ?illust_type, ?filter, ?offset, ?req_auth) =
+        let illust_type = defaultArg illust_type "illust"
+        let filter = defaultArg filter "for_ios"
+        let offset = defaultArg offset null
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/user/illusts"
+
+        let mutable query =
+            [ "user_id", user_id
+              "filter", filter ]
+        if not (String.IsNullOrEmpty illust_type) then
+            query <- query @ [ "type", illust_type ]
+        if not (String.IsNullOrEmpty offset) then
+            query <- query @ [ "offset", offset ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
