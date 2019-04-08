@@ -42,6 +42,11 @@ type PixivBaseAPI() =
         __.client_id <- client_id
         __.client_secret <- client_secret
 
+    member internal __.get_json (body : string) =
+        let mutable resjson = body
+        resjson <- resjson.Substring(0, resjson.LastIndexOf("\""))
+        resjson.Substring(resjson.IndexOf("\"") + 1)
+
     //auth主要逻辑
     //refresh_token未测试
     member __.auth (?username, ?password, ?refresh_token) =
@@ -83,10 +88,9 @@ type PixivBaseAPI() =
                 |> raise
         let mutable token = JsonValue.Null
         try
-            let mutable resjson = r.Body.ToString()
-            resjson <- resjson.Substring(0, resjson.LastIndexOf("\""))
-            resjson <- resjson.Substring(resjson.IndexOf("\"") + 1)
-            token <- resjson |> JsonValue.Parse
+            token <- r.Body.ToString()
+                     |> __.get_json
+                     |> JsonValue.Parse
             __.access_token <- token?response?access_token.AsString()
             __.user_id <- token?response?user?id.AsInteger()
             __.refresh_token <- token?response?refresh_token.AsString()
