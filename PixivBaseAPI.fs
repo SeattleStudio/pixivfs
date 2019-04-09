@@ -16,7 +16,11 @@ type PixivBaseAPI() =
         with get () = __._refresh_token
         and internal set (value) = __._refresh_token <- value
 
-    member val internal user_id = 0 with get, set
+    member val internal _user_id = null with get, set
+
+    member __.user_id
+        with get () = __._user_id
+        and internal set (value) = __._user_id <- value
 
     member __.require_auth() =
         if __.access_token = null then
@@ -100,7 +104,7 @@ type PixivBaseAPI() =
                      |> __.get_json
                      |> JsonValue.Parse
             __.access_token <- token?response?access_token.AsString()
-            __.user_id <- token?response?user?id.AsInteger()
+            __.user_id <- token?response?user?id.AsString()
             __.refresh_token <- token?response?refresh_token.AsString()
         with e ->
             ("Get access_token error! Exception:\n{0}\nResponse:\n{1}",
