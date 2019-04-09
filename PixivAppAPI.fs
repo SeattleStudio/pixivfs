@@ -112,3 +112,39 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //作品评论
+    member __.illust_comments (illust_id, ?offset, ?include_total_comments,
+                               ?req_auth) =
+        let offset = defaultArg offset null
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/illust/comments"
+        let mutable query = [ "illust_id", illust_id ]
+        if not (String.IsNullOrEmpty offset) then
+            query <- query @ [ "offset", offset ]
+        if not (include_total_comments.IsNone) then
+            query <- query @ [ "include_total_comments",
+                               (if include_total_comments.Value then "true"
+                                else "false") ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
+
+    //相关作品
+    member __.illust_related (illust_id, ?filter, ?seed_illust_ids, ?req_auth) =
+        let filter = defaultArg filter "for_ios"
+        let seed_illust_ids = defaultArg seed_illust_ids []
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v2/illust/related"
+
+        let mutable query =
+            [ "illust_id", illust_id
+              "filter", filter ]
+        if not seed_illust_ids.IsEmpty then
+            for x in seed_illust_ids do
+                query <- query @ [ "seed_illust_ids[]", x ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
