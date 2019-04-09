@@ -6,26 +6,28 @@ open System
 
 exception public PixivException of string
 
-type PixivBaseAPI() =
+type PixivBaseAPI(access_token, refresh_token, user_id) =
+    let mutable _access_token = access_token
+    let mutable _refresh_token = refresh_token
+    let mutable _user_id = user_id
+    new() = PixivBaseAPI(null, null, null)
+    new(baseapi : PixivBaseAPI) =
+        PixivBaseAPI
+            (baseapi.access_token, baseapi.refresh_token, baseapi.user_id)
     member val internal client_id = "MOBrBDS8blbauoSck0ZfDbtuzpyT" with get, set
     member val internal client_secret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj" with get, set
-    member val internal _access_token : string = null with get, set
 
     member __.access_token
-        with get () = __._access_token
-        and internal set (value) = __._access_token <- value
-
-    member val internal _refresh_token : string = null with get, set
+        with get () = _access_token
+        and internal set (value) = _access_token <- value
 
     member __.refresh_token
-        with get () = __._refresh_token
-        and internal set (value) = __._refresh_token <- value
-
-    member val internal _user_id = null with get, set
+        with get () = _refresh_token
+        and internal set (value) = _refresh_token <- value
 
     member __.user_id
-        with get () = __._user_id
-        and internal set (value) = __._user_id <- value
+        with get () = _user_id
+        and internal set (value) = _user_id <- value
 
     member __.require_auth() =
         if __.access_token = null then

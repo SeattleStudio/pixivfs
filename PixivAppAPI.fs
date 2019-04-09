@@ -4,8 +4,12 @@ open System
 open FSharp.Data
 open System.Web
 
-type PixivAppAPI() =
-    inherit PixivBaseAPI()
+type PixivAppAPI(access_token, refresh_token, user_id) =
+    inherit PixivBaseAPI(access_token, refresh_token, user_id)
+    new() = PixivAppAPI(null, null, null)
+    new(baseapi : PixivBaseAPI) =
+        PixivAppAPI
+            (baseapi.access_token, baseapi.refresh_token, baseapi.user_id)
 
     //可通过req_auth来决定是否使用登录后的数据
     member __.no_auth_requests_call (method, url, ?headers, ?query, ?body,
