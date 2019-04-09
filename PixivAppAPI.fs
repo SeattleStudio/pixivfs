@@ -230,3 +230,14 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //趋势标签
+    member __.trending_tags_illust (?filter, ?req_auth) =
+        let filter = defaultArg filter "for_ios"
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/trending-tags/illust"
+        let query = [ "filter", filter ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
