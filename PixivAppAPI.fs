@@ -148,3 +148,61 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //首页推荐
+    //content_type: [illust, manga]
+    member __.illust_recommended (?content_type, ?include_ranking_label, ?filter,
+                                  ?max_bookmark_id_for_recommend,
+                                  ?min_bookmark_id_for_recent_illust, ?offset,
+                                  ?include_ranking_illusts, ?bookmark_illust_ids,
+                                  ?include_privacy_policy, ?req_auth) =
+        let content_type = defaultArg content_type "illust"
+        let include_ranking_label = defaultArg include_ranking_label true
+        let filter = defaultArg filter "for_ios"
+        let max_bookmark_id_for_recommend =
+            defaultArg max_bookmark_id_for_recommend null
+        let min_bookmark_id_for_recent_illust =
+            defaultArg min_bookmark_id_for_recent_illust null
+        let offset = defaultArg offset null
+        let bookmark_illust_ids = defaultArg bookmark_illust_ids []
+        let include_privacy_policy = defaultArg include_privacy_policy null
+        let req_auth = defaultArg req_auth true
+
+        let url =
+            if req_auth then "https://app-api.pixiv.net/v1/illust/recommended"
+            else "https://app-api.pixiv.net/v1/illust/recommended-nologin"
+
+        let mutable query =
+            [ "content_type", content_type
+              "include_ranking_label",
+              (if include_ranking_label then "true"
+               else "false")
+              "filter", filter ]
+
+        if not (String.IsNullOrEmpty max_bookmark_id_for_recommend) then
+            query <- query
+                     @ [ "max_bookmark_id_for_recommend",
+                         max_bookmark_id_for_recommend ]
+        if not (String.IsNullOrEmpty min_bookmark_id_for_recent_illust) then
+            query <- query
+                     @ [ "min_bookmark_id_for_recent_illust",
+                         min_bookmark_id_for_recent_illust ]
+        if not (String.IsNullOrEmpty offset) then
+            query <- query @ [ "offset", offset ]
+        if not include_ranking_illusts.IsNone then
+            query <- query @ [ "include_ranking_illusts",
+                               (if include_ranking_illusts.Value then "true"
+                                else "false") ]
+        if not req_auth then
+            let mutable ids = ""
+            for x in bookmark_illust_ids do
+                ids <- ids + x + ","
+            if not (ids = "") then ids <- ids.TrimEnd ','
+            query <- query @ [ "bookmark_illust_ids", ids ]
+        if not (String.IsNullOrEmpty include_privacy_policy) then
+            query <- query
+                     @ [ "include_privacy_policy", include_privacy_policy ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
