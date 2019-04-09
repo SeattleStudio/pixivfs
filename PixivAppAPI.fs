@@ -376,3 +376,20 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //黑名单用户
+    member __.user_list (user_id, ?filter, ?offset, ?req_auth) =
+        let filter = defaultArg filter "for_ios"
+        let offset = defaultArg offset null
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v2/user/list"
+
+        let mutable query =
+            [ "user_id", user_id
+              "filter", filter ]
+        if not (String.IsNullOrEmpty offset) then
+            query <- query @ [ "offset", offset ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
