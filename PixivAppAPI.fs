@@ -403,3 +403,18 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //特辑详情（伪装成Chrome）
+    member __.showcase_article (showcase_id) =
+        let url = "https://www.pixiv.net/ajax/showcase/article"
+
+        let headers =
+            [ "User-Agent",
+              "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+              "Referer", "https://www.pixiv.net" ]
+
+        let query = [ "article_id", showcase_id ]
+        __.no_auth_requests_call("GET", url, headers = headers, query = query,
+                                 req_auth = false).Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
