@@ -241,3 +241,34 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //搜索
+    //search_target - 搜索类型
+    //  partial_match_for_tags  - 标签部分一致
+    //  exact_match_for_tags    - 标签完全一致
+    //  title_and_caption       - 标题说明文
+    //sort: [date_desc, date_asc]
+    //duration: [within_last_day, within_last_week, within_last_month]
+    member __.search_illust (word, ?search_target, ?sort, ?duration, ?filter,
+                             ?offset, ?req_auth) =
+        let search_target = defaultArg search_target "partial_match_for_tags"
+        let sort = defaultArg sort "date_desc"
+        let duration = defaultArg duration null
+        let filter = defaultArg filter "for_ios"
+        let offset = defaultArg offset null
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/search/illust"
+
+        let mutable query =
+            [ "word", word
+              "search_target", search_target
+              "sort", sort
+              "filter", filter ]
+        if not (String.IsNullOrEmpty duration) then
+            query <- query @ [ "duration", duration ]
+        if not (String.IsNullOrEmpty offset) then
+            query <- query @ [ "offset", offset ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
