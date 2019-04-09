@@ -301,5 +301,17 @@ type PixivAppAPI() =
         tagsstr <- tagsstr.Trim()
         if not (tagsstr = "") then
             data <- data @ [ "tags", tagsstr |> HttpUtility.UrlEncode ]
-        __.no_auth_requests_call
-            ("POST", url, body = FormValues data, req_auth = req_auth)
+        __.no_auth_requests_call("POST", url, body = FormValues data,
+                                 req_auth = req_auth).Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
+
+    //删除收藏
+    member __.illust_bookmark_delete (illust_id, ?req_auth) =
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/illust/bookmark/delete"
+        let data = [ "illust_id", illust_id ]
+        __.no_auth_requests_call("POST", url, body = FormValues data,
+                                 req_auth = req_auth).Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
