@@ -9,7 +9,12 @@ exception public PixivException of string
 type PixivBaseAPI() =
     member val internal client_id = "MOBrBDS8blbauoSck0ZfDbtuzpyT" with get, set
     member val internal client_secret = "lsACyCD94FhDUtGTXi3QzcFE2uU1hqtDaKeqrdwj" with get, set
-    member val internal access_token : string = null with get, set
+    member val internal _access_token : string = null with get, set
+
+    member __.access_token
+        with get () = __._access_token
+        and internal set (value) = __._access_token <- value
+
     member val internal _refresh_token : string = null with get, set
 
     member __.refresh_token
