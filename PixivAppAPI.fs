@@ -23,7 +23,7 @@ type PixivAppAPI() =
                            "User-Agent",
                            "PixivIOSApp/6.7.1 (iOS 10.3.1; iPhone8,1)" ]
         if req_auth then
-            base.require_auth
+            __.require_auth()
             headers <- headers
                        @ [ "Authorization",
                            String.Format("Bearer {0}", __.access_token) ]
