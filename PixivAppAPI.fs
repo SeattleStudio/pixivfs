@@ -2,6 +2,7 @@ namespace PixivFS
 
 open System
 open FSharp.Data
+open System.Web
 
 type PixivAppAPI() =
     inherit PixivBaseAPI()
@@ -272,3 +273,33 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //作品收藏详情
+    member __.illust_bookmark_detail (illust_id, ?req_auth) =
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v2/illust/bookmark/detail"
+        let query = [ "illust_id", illust_id ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
+
+    //新增收藏
+    member __.illust_bookmark_add (illust_id, ?restrict, ?tags, ?req_auth) =
+        let restrict = defaultArg restrict "public"
+        let tags = defaultArg tags []
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v2/illust/bookmark/add"
+
+        let mutable data =
+            [ "illust_id", illust_id
+              "restrict", restrict ]
+
+        let mutable tagsstr = ""
+        for x in tags do
+            tagsstr <- tagsstr + x + " "
+        tagsstr <- tagsstr.Trim()
+        if not (tagsstr = "") then
+            data <- data @ [ "tags", tagsstr |> HttpUtility.UrlEncode ]
+        __.no_auth_requests_call
+            ("POST", url, body = FormValues data, req_auth = req_auth)
