@@ -207,3 +207,26 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //作品排行
+    //mode: [day, week, month, day_male, day_female, week_original, week_rookie, day_manga]
+    //date: yyyy-mm-dd
+    member __.illust_ranking (?mode, ?filter, ?date, ?offset, ?req_auth) =
+        let mode = defaultArg mode "day"
+        let filter = defaultArg filter "for_ios"
+        let date = defaultArg date null
+        let offset = defaultArg offset null
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/illust/ranking"
+
+        let mutable query =
+            [ "mode", mode
+              "filter", filter ]
+        if not (String.IsNullOrEmpty date) then
+            query <- query @ [ "date", date ]
+        if not (String.IsNullOrEmpty offset) then
+            query <- query @ [ "offset", offset ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
