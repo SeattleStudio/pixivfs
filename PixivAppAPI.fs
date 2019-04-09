@@ -363,3 +363,16 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //好P友
+    member __.user_mypixiv (user_id, ?offset, ?req_auth) =
+        let offset = defaultArg offset null
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/user/mypixiv"
+        let mutable query = [ "user_id", user_id ]
+        if not (String.IsNullOrEmpty offset) then
+            query <- query @ [ "offset", offset ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
