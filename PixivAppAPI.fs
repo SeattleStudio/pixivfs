@@ -393,3 +393,13 @@ type PixivAppAPI() =
           .Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
+
+    //ugoira信息
+    member __.ugoira_metadata (illust_id, ?req_auth) =
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/ugoira/metadata"
+        let query = [ "illust_id", illust_id ]
+        __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
+          .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
