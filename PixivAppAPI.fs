@@ -197,8 +197,9 @@ type PixivAppAPI() =
             let mutable ids = ""
             for x in bookmark_illust_ids do
                 ids <- ids + x + ","
-            if not (ids = "") then ids <- ids.TrimEnd ','
-            query <- query @ [ "bookmark_illust_ids", ids ]
+            if not (ids = "") then
+                ids <- ids.TrimEnd ','
+                query <- query @ [ "bookmark_illust_ids", ids ]
         if not (String.IsNullOrEmpty include_privacy_policy) then
             query <- query
                      @ [ "include_privacy_policy", include_privacy_policy ]
