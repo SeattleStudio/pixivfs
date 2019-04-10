@@ -47,7 +47,7 @@ type PixivPublicAPI(access_token, refresh_token, user_id) =
         |> JsonValue.Parse
 
     //用户资料
-    member __.users (author_id) =
+    member __.users (author_id : string) =
         let url =
             String.Format
                 ("https://public-api.secure.pixiv.net/v1/users/{0}.json",
