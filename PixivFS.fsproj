@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>PixivFS</PackageId>
+    <Version>0.1.2</Version>
+    <Authors>TobiichiAmane</Authors>
+    <Description>Pixiv API implemented in F#. Use this package along with PixivFSCS if you want to use it in C#.</Description>
+    <PackageLicenseExpression>GPL-2.0-only</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/tobiichiamane/pixivfs</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PixivBaseAPI.fs" />
