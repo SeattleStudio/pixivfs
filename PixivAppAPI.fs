@@ -34,6 +34,28 @@ type PixivAppAPI(access_token, refresh_token, user_id) =
                            String.Format("Bearer {0}", __.access_token) ]
         __.requests_call (method, url, headers, ?query = query, ?body = body)
 
+    member __.no_auth_requests_call_stream (method, url, ?headers, ?query, ?body,
+                                            ?req_auth) =
+        let req_auth = defaultArg req_auth true
+        let mutable headers = defaultArg headers []
+        if not (List.exists (fun elem ->
+                    let (a, _) = elem
+                    a = "User-Agent" || a = "user-agent") headers)
+        then
+            headers <- headers
+                       @ [ "App-OS", "ios"
+                           "App-OS-Version", "10.3.1"
+                           "App-Version", "6.7.1"
+
+                           "User-Agent",
+                           "PixivIOSApp/6.7.1 (iOS 10.3.1; iPhone8,1)" ]
+        if req_auth then
+            __.require_auth()
+            headers <- headers
+                       @ [ "Authorization",
+                           String.Format("Bearer {0}", __.access_token) ]
+        __.requests_call_stream (method, url, headers, ?query = query, ?body = body)
+
     //用户详情
     member __.user_detail (user_id, ?filter, ?req_auth) =
         let filter = defaultArg filter "for_ios"
