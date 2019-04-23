@@ -121,7 +121,7 @@ type PixivAppAPI(access_token, refresh_token, user_id) =
         let restrict = defaultArg restrict "public"
         let offset = defaultArg offset null
         let req_auth = defaultArg req_auth true
-        let url = "https://app-api.pixiv.net/v1/illust/follow"
+        let url = "https://app-api.pixiv.net/v2/illust/follow"
         let mutable query = [ "restrict", restrict ]
         if not (String.IsNullOrEmpty offset) then
             query <- query @ [ "offset", offset ]
