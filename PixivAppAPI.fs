@@ -54,7 +54,8 @@ type PixivAppAPI(access_token, refresh_token, user_id) =
             headers <- headers
                        @ [ "Authorization",
                            String.Format("Bearer {0}", __.access_token) ]
-        __.requests_call_stream (method, url, headers, ?query = query, ?body = body)
+        __.requests_call_stream
+            (method, url, headers, ?query = query, ?body = body)
 
     //用户详情
     member __.user_detail (user_id, ?filter, ?req_auth) =
@@ -387,6 +388,34 @@ type PixivAppAPI(access_token, refresh_token, user_id) =
             query <- query @ [ "offset", offset ]
         __.no_auth_requests_call("GET", url, query = query, req_auth = req_auth)
           .Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
+
+    //关注用户
+    member __.user_follow_add (user_id, ?restrict, ?req_auth) =
+        let restrict = defaultArg restrict "public"
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/user/follow/add"
+
+        let data =
+            [ "user_id", user_id
+              "restrict", restrict ]
+        __.no_auth_requests_call("POST", url, body = FormValues data,
+                                 req_auth = req_auth).Body.ToString()
+        |> __.get_json
+        |> JsonValue.Parse
+
+    //取关用户
+    member __.user_follow_delete (user_id, ?restrict, ?req_auth) =
+        let restrict = defaultArg restrict "public"
+        let req_auth = defaultArg req_auth true
+        let url = "https://app-api.pixiv.net/v1/user/follow/delete"
+
+        let data =
+            [ "user_id", user_id
+              "restrict", restrict ]
+        __.no_auth_requests_call("POST", url, body = FormValues data,
+                                 req_auth = req_auth).Body.ToString()
         |> __.get_json
         |> JsonValue.Parse
 
